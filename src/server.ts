@@ -19,5 +19,4 @@ app.listen(port, () => {
 	console.log(`Server started at: ${port}`);
 	console.log("Loading CSV data...");
 	loadCSV();
-	console.log("Ready");
 });

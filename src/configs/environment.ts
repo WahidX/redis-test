@@ -1,16 +1,19 @@
 import { environmentInterface } from "../@types/environment";
-import path from "path";
 
 const development: environmentInterface = {
 	name: "development",
-	file_name: "NSEBhav.csv",
+	file_path: "CSV_data/NSEBhav.csv",
 	hashkey: "csv_dev",
+	expire_time: 10,
+	should_flush_redis: true,
 };
 
 const production: environmentInterface = {
 	name: "production",
-	file_name: "NSEBhav.csv",
+	file_path: "CSV_data/NSEBhav.csv",
 	hashkey: "csv_prod",
+	expire_time: 10,
+	should_flush_redis: true,
 };
 
 // @ts-ignore
