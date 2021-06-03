@@ -1,4 +1,5 @@
 import express from "express";
+import { loadCSV } from "./configs/loadCSV";
 const app = express();
 
 const port: string = process.env.PORT || "8000";
@@ -15,5 +16,8 @@ app.get("/", (req, res) => {
 app.use("/api", require("./api"));
 
 app.listen(port, () => {
-	console.log(`Server running at: ${port}`);
+	console.log(`Server started at: ${port}`);
+	console.log("Loading CSV data...");
+	loadCSV();
+	console.log("Ready");
 });
