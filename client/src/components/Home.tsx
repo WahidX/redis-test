@@ -3,7 +3,6 @@ import { Flex, Heading } from "@chakra-ui/layout";
 import { Text } from "@chakra-ui/react";
 import React, { useContext, useEffect } from "react";
 import { fetchDataAdapter } from "../adapters/fetchData";
-import { testServer } from "../adapters/testConn";
 import TableContainer from "./TableContainer";
 import { AppDataContext } from "../contexts/appDataContext";
 
@@ -18,13 +17,13 @@ function Home(props) {
 
 	return (
 		<div>
-			<Heading>Table Datas</Heading>
+			<Heading>Table Data</Heading>
 			<TableContainer rows={appData.rows} />
 
-			<Flex direction="row" align="center" justifyContent="center">
-				<Button>{"< "}</Button>
-				<Text>Page Number</Text>
-				<Button>{" >"}</Button>
+			<Flex direction="row" align="center" justifyContent="center" m="2">
+				<Button m="4">{"<"}</Button>
+				<Text fontSize="md">{appData.page}</Text>
+				<Button m="4">{">"}</Button>
 			</Flex>
 		</div>
 	);
