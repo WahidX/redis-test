@@ -1,6 +1,5 @@
 import fs from "fs";
 import readline from "readline";
-// import redis from "redis";
 import Redis from "ioredis";
 import env from "../configs/environment";
 import path from "path";
@@ -57,12 +56,12 @@ export const loadCSV = () => {
 		if (loadingStats.readLineCount === 1) return; // header line
 
 		let fields = line.split(",");
+
+		// extracting the symbols for indexing
 		if (symbols[fields[0]]) {
 			symbols[fields[0]].push(loadingStats.readLineCount - 2);
 		} else symbols[fields[0]] = [loadingStats.readLineCount - 2];
 
-		// cleaning rest of the fields
-		fields.shift(); // removing symbol
 		fields.splice(fields.length - 1); // removing null field
 
 		// pushing the line in redis list for multiple query execution

@@ -1,3 +1,0 @@
-// interface symbolInterface {
-// 	key: string,
-// }
