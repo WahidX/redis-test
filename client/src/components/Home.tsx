@@ -1,13 +1,15 @@
 import { Button } from "@chakra-ui/button";
 import { Flex, Heading } from "@chakra-ui/layout";
-import { Box, Text } from "@chakra-ui/react";
+import { Text } from "@chakra-ui/react";
 import React, { useEffect } from "react";
+import { fetchDataAdapter } from "../adapters/fetchData";
 import { testServer } from "../adapters/testConn";
 import TableContainer from "./TableContainer";
 
 function Home(props) {
 	useEffect(() => {
-		testServer();
+		fetchDataAdapter(0, 10);
+		// testServer();
 	}, []);
 
 	return (

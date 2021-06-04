@@ -1,4 +1,5 @@
 import express from "express";
+import { getData } from "../../controllers/data_controller";
 
 // Routers
 const router = express.Router();
@@ -9,6 +10,6 @@ router.get("/", (req, res) => {
 });
 
 // data api
-router.get("/data", require("./data_api"));
+router.get("/data", getData);
 
 module.exports = router;
