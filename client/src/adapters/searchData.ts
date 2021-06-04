@@ -1,14 +1,15 @@
 import axios from "axios";
 import urls from "../utils/urls";
 
-export let fetchDataAdapter = async (offset: number, total: number, setAppData: Function) => {
+export let searchDataAdapter = async (key: string, total: number, setAppData: Function) => {
 	try {
-		let response = await axios.get(urls.fetchData(offset, total));
+		let response = await axios.get(urls.searchData(key, total));
+		console.log("RESULTS : ", response.data);
 
 		setAppData((prev) => {
 			return {
 				...prev,
-				rows: response.data.rows,
+				results: response.data.rows,
 			};
 		});
 	} catch (err) {

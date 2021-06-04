@@ -1,5 +1,6 @@
 import express from "express";
 import { getData } from "../../controllers/data_controller";
+import { fetchSearchResults } from "../../controllers/search_controller";
 
 // Routers
 const router = express.Router();
@@ -11,5 +12,6 @@ router.get("/", (req, res) => {
 
 // data api
 router.get("/data", getData);
+router.get("/data/search", fetchSearchResults);
 
 module.exports = router;

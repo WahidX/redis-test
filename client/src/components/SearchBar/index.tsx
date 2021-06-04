@@ -1,15 +1,18 @@
+import React, { useState, useContext } from "react";
 import { Input, InputGroup } from "@chakra-ui/input";
 import { Button, FormControl, IconButton, InputLeftElement } from "@chakra-ui/react";
 import { SearchIcon } from "@chakra-ui/icons";
 import { debounce } from "lodash";
-
-import React, { useState } from "react";
+import { searchDataAdapter } from "../../adapters/searchData";
+import { AppDataContext } from "../../contexts/appDataContext";
 
 function SearchBar(props) {
+	const [appData, setAppData] = useContext(AppDataContext);
 	const [searchkey, setSearchKey] = useState("");
 
 	let searchHandle = () => {
 		console.log(searchkey);
+		searchDataAdapter(searchkey, appData.total, setAppData);
 	};
 
 	let debouncedSearch = debounce(searchHandle, 300);

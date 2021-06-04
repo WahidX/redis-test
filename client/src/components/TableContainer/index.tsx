@@ -5,7 +5,6 @@ import { headers } from "../../utils/headers";
 function TableContainer(props) {
 	let rows: string[] = props.rows;
 
-	console.log("ROWS::", rows);
 	let processedRows = rows.map((row) => {
 		let fields = row.split(",");
 		fields.splice(6, 6);
