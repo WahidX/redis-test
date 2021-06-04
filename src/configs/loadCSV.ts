@@ -1,15 +1,17 @@
 import fs from "fs";
 import readline from "readline";
-import redis from "redis";
+// import redis from "redis";
+import Redis from "ioredis";
 import env from "../configs/environment";
 import path from "path";
 import { loadingStatsInterface } from "../@types/loadingStats";
 
-// Redis redisClient setup
-export const redisClient = redis.createClient();
-redisClient.on("error", function (error) {
+// Redis redis setup
+export const redis = new Redis();
+redis.on("error", function (error) {
 	console.error("Redis Error: ", error);
 });
+const multi = redis.multi(); // For executing multiple redis commands
 
 // CSV reader config
 const fileStream = fs.createReadStream(path.join("./", env.file_path));
@@ -24,43 +26,63 @@ const loadingStats: loadingStatsInterface = {
 	linesError: 0,
 };
 
+// expireat timestamp
+const getExpireTime = (): number =>
+	Math.floor(new Date().setSeconds(new Date().getSeconds() + env.expire_time) / 1000);
+
+const printStats = () => {
+	// Logging the stats
+	console.log("Loaded CSV file");
+	console.log(
+		`>> Total lines: ${loadingStats.readLineCount - 1}\n>> Lines stored: ${
+			loadingStats.linesStored
+		}\n>> Lines error: ${loadingStats.linesError}`
+	);
+
+	// flushing stats
+	loadingStats.linesError = 0;
+	loadingStats.readLineCount = 0;
+	loadingStats.linesStored = 0;
+};
+
+const symbols: { [key: string]: number[] } = {};
+
 // main loader method
 export const loadCSV = () => {
 	// flushing redis db on start
-	env.should_flush_redis && redisClient.flushall();
+	env.should_flush_redis && redis.flushall();
 
 	reader.on("line", async (line) => {
 		loadingStats.readLineCount++;
-
-		/*
-			Key format:  'symbol|ISIN'
-		*/
 		if (loadingStats.readLineCount === 1) return; // header line
 
 		let fields = line.split(",");
-		let key = fields[0] + "|" + fields[fields.length - 2];
+		if (symbols[fields[0]]) {
+			symbols[fields[0]].push(loadingStats.readLineCount - 2);
+		} else symbols[fields[0]] = [loadingStats.readLineCount - 2];
 
 		// cleaning rest of the fields
 		fields.shift(); // removing symbol
-		fields.splice(fields.length - 2); // removing ISIN and null element
+		fields.splice(fields.length - 1); // removing null field
 
-		// setting the line in redis sorted sets with expiry
-		redisClient.setex(key, env.expire_time, fields.toString(), (err, _) => {
-			err ? loadingStats.linesError++ : loadingStats.linesStored++;
-		});
+		// pushing the line in redis list for multiple query execution
+		multi.rpush(env.list_key, fields.toString());
 	});
 
-	reader.on("close", () => {
-		console.log("Loaded CSV file");
-		console.log(
-			`>> Total lines: ${loadingStats.readLineCount - 1}\n>> Lines stored: ${
-				loadingStats.linesStored
-			}\n>> Lines error: ${loadingStats.linesError}`
-		);
+	reader.on("close", async () => {
+		try {
+			let response = await multi.exec();
+			redis.expireat(env.list_key, getExpireTime());
 
-		// flushing stats
-		loadingStats.linesError = 0;
-		loadingStats.readLineCount = 0;
-		loadingStats.linesStored = 0;
+			for (let symbol in symbols) {
+				await redis.set(symbol, symbols[symbol].toString(), "ex", env.expire_time);
+			}
+
+			loadingStats.linesStored = response.length;
+
+			printStats();
+		} catch (err) {
+			console.error(err);
+		}
 	});
 };
