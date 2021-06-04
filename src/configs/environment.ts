@@ -5,7 +5,7 @@ const development: environmentInterface = {
 	file_path: "CSV_data/NSEBhav.csv",
 	hashkey: "symbols_dev",
 	list_key: "csv_dev",
-	expire_time: 10,
+	expire_time: 24 * 60 * 60,
 	should_flush_redis: true,
 };
 
@@ -14,7 +14,7 @@ const production: environmentInterface = {
 	file_path: "CSV_data/NSEBhav.csv",
 	hashkey: "symbols_prod",
 	list_key: "csv_prod",
-	expire_time: 10,
+	expire_time: 24 * 60 * 60,
 	should_flush_redis: true,
 };
 

@@ -1,9 +1,16 @@
 import React from "react";
-import { Table, Thead, Tbody, Tfoot, Tr, Th, Td, TableCaption, Button } from "@chakra-ui/react";
-import { headers, indexesToInclude } from "../../utils/headers";
+import { Table, Thead, Tbody, Tr, Td, Th } from "@chakra-ui/react";
+import { headers } from "../../utils/headers";
 
 function TableContainer(props) {
 	let rows: string[] = props.rows;
+
+	console.log("ROWS::", rows);
+	let processedRows = rows.map((row) => {
+		let fields = row.split(",");
+		fields.splice(6, 6);
+		return fields;
+	});
 
 	return (
 		<Table variant="simple">
@@ -16,18 +23,13 @@ function TableContainer(props) {
 			</Thead>
 
 			<Tbody>
-				{rows.map((row) => {
-					let fields = row.split(",");
-					return (
-						<Tr>
-							{fields.map((field, index) => {
-								{
-									indexesToInclude.includes(index) && <td>{field}</td>;
-								}
-							})}
-						</Tr>
-					);
-				})}
+				{processedRows.map((row) => (
+					<Tr>
+						{row.map((field) => (
+							<Td>{field}</Td>
+						))}
+					</Tr>
+				))}
 			</Tbody>
 		</Table>
 	);

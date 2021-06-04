@@ -1,21 +1,25 @@
 import { Button } from "@chakra-ui/button";
 import { Flex, Heading } from "@chakra-ui/layout";
 import { Text } from "@chakra-ui/react";
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { fetchDataAdapter } from "../adapters/fetchData";
 import { testServer } from "../adapters/testConn";
 import TableContainer from "./TableContainer";
+import { AppDataContext } from "../contexts/appDataContext";
 
 function Home(props) {
+	const [appData, setAppData] = useContext(AppDataContext);
+
+	console.log("STATE::", appData);
+
 	useEffect(() => {
-		fetchDataAdapter(0, 10);
-		// testServer();
-	}, []);
+		fetchDataAdapter((appData.page - 1) * appData.total, appData.total, setAppData);
+	}, [appData.page]);
 
 	return (
 		<div>
 			<Heading>Table Datas</Heading>
-			<TableContainer rows={[]} />
+			<TableContainer rows={appData.rows} />
 
 			<Flex direction="row" align="center" justifyContent="center">
 				<Button>{"< "}</Button>
